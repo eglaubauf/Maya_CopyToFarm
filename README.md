@@ -32,7 +32,7 @@ This script has only been tested with Maya 2019 and Windows 10.
 - A possible Version for Linux/OSX (low Priority)
 - Exception Catches
 
-##Installation
+## Installation
 
 1. Download zip or clone repo
 2. Copy the Folder "CopyToFarm" to your "C:\Users\<User>\Documents\maya\2019\scripts" Folder
