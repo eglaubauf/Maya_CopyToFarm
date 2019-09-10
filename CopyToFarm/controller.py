@@ -30,8 +30,8 @@ from PySide2 import QtWidgets, QtCore, QtGui
 import maya.OpenMayaUI as omui
 from shiboken2 import wrapInstance
 
-import copyFarm.core as core
-import copyFarm.view as view
+import copyToFarm.core as core
+import copyToFarm.view as view
 
 # Where is this script?
 #SCRIPT_LOC = os.path.split(__file__)[0]
