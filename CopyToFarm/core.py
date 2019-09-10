@@ -108,7 +108,12 @@ class Core():
     #Reopens The File in the New Workspace
     def reOpenFile(self):
         self.saveFile()
+        
         filepath = cmds.file(q=True, sn= True)
+        # Get Folders inbetween Project and SceneFile to be able to open the copied file on the new location
+        f = filepath[len(self.ws):]
+        f = f[:f.rfind('/')+1]        
+        filepath = self.dest + '/' +  f + cmds.file(q=True, sn= True, shn=True)
         cmds.file( filepath , open=True )
 
     #Save Current File
