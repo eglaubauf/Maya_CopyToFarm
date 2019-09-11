@@ -41,9 +41,9 @@ reload(view)
 '''
 Open with
 
-import copyFarm.Controller as copyFarmCtrl
-reload(copyFarmCtrl)
-copyFarmCtrl.open()
+import copyToFarm.controller as copyToFarmCtrl
+reload(copyToFarmCtrl)
+copyToFarmCtrl.open()
     
 '''
 
