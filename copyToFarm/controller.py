@@ -112,13 +112,16 @@ class Controller(QtWidgets.QMainWindow, view.Ui_copyFarm):
         if userDest is not None:
             self.core.setDestination(userDest[0])
             self.dest_btn.setText(self.core.dest)
-        
+    
+    #Set User Preferences    
     def setCopyAll(self):
         self.core.setCopyAll(True)
-
+    
+    #Set User Preferences 
     def setCopyNew(self):
         self.core.setCopyAll(False)
 
+    #Set User Preferences 
     def openNewCheck(self):
         self.core.setOpenNew(self.openNew_Box.isChecked())
 
@@ -141,6 +144,10 @@ class Controller(QtWidgets.QMainWindow, view.Ui_copyFarm):
             cmds.confirmDialog(m='Please set a destination first', b='Okay')
             return
         count = self.core.copyFiles()
+        if count == 0:
+            message = 'An error occured during copying - Please Check your Destination Path'
+            cmds.confirmDialog(m=message, b='Okay')
+            return
         message = str(count) + ' Files copied succesfully'
         cmds.confirmDialog(m=message, b='Okay')
         

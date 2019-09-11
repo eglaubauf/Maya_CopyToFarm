@@ -41,15 +41,21 @@ class Core():
     def getWorkspace(self):  
         return cmds.workspace(q=True, directory=True, rd = True)
 
-    # Set the New Destination
-    def setDestination(self, newDest):            
-        self.dest = newDest
-        return True
+ 
     
     # Gets a List of all Files in a Maya Scene
     def getAllLinkedFiles(self):
         self.files = cmds.file(query=1, list=1, withoutCopyNumber=1)   
         return self.files
+
+    # Set the New Destination
+    def setDestination(self, newDest):            
+        self.dest = newDest
+        return True
+
+    #Sets the Workspace to the New Directory
+    def setNewWorkspace(self):
+        cmds.workspace(self.dest, openWorkspace=True)
 
     #Set all Files to Copy
     def setCopyAll(self, flag):
@@ -62,6 +68,23 @@ class Core():
     #Set to Copy only newer Files
     def setImport(self, flag):
         self.importFlag = flag
+
+
+    #Import all Levels of References 
+    def importReference(self):
+        changed = True
+        count = 0
+        while changed is True: #Call As long as there is a Change
+            changed = False
+            references = cmds.file(q=True, r=True)
+            if references is not None: 
+                for r in references:
+                    cmds.file(r, ir=True)
+                    changed = True
+                    count +=1
+        self.saveFileAppend('_imported')
+       
+        return count    
 
     #Copies all Files to a new Workspace
     def copyFiles(self):
@@ -84,8 +107,11 @@ class Core():
             # create Directories if Missing
             destinationPath = self.dest + '/' + sourcePathSub
             if not os.path.exists(destinationPath):
-                os.makedirs(destinationPath)
-            
+                try:
+                    os.makedirs(destinationPath)
+                except WindowsError:
+                    return 0
+                    
             #Create CopyPath
             destination = self.dest + '/' + sourcePathSub + sourceFile
 
@@ -93,17 +119,19 @@ class Core():
             if self.copyAll is False:
                 if os.path.exists(destination):
                     if os.path.getctime(f) > os.path.getctime(destination) is True:
-                        fc.copyfile(f, destination)
+                        try:
+                            fc.copyfile(f, destination)
+                        except fc.CTError:
+                            return 0
                         count += 1
             else: 
-                fc.copyfile(f, destination)
+                try:
+                    fc.copyfile(f, destination)
+                except fc.CTError:
+                    return 0
                 count +=1
 
         return count
-
-    #Sets the Workspace to the New Directory
-    def setNewWorkspace(self):
-        cmds.workspace(self.dest, openWorkspace=True)
 
     #Reopens The File in the New Workspace
     def reOpenFile(self):
@@ -126,21 +154,7 @@ class Core():
         cmds.file(rename = filepath)
         cmds.file(save=True)
 
-    #Import all Levels of References 
-    def importReference(self):
-        changed = True
-        count = 0
-        while changed is True: #Call As long as there is a Change
-            changed = False
-            references = cmds.file(q=True, r=True)
-            if references is not None: 
-                for r in references:
-                    cmds.file(r, ir=True)
-                    changed = True
-                    count +=1
-        self.saveFileAppend('_imported')
-       
-        return count    
+ 
 
             
             
