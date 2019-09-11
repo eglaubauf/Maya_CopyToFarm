@@ -21,16 +21,15 @@ This script has only been tested with Maya 2019 and Windows 10.
 - Only copy newer files
 - Copy all Files
 - Open New File in one Step (also sets the Workspace to this new Location)
+- Copy Files from any Location to new Project Directory (Rebuilds FolderStructure Below the new Project Location)
+- works with Maya 2019 and newer (2018 and older possibly as well but untested)
+- OS-Exceptions are handled
+- Windows only (at the Moment)
 
 
 ## Todos
 
-- Extensive Testing
-- Allow Copying of Folder/Files from external sources
-  - possibly by collting all Files to the current workspace first
-- Save the lastest chosen directory
 - A possible Version for Linux/OSX (low Priority)
-- Exception Catches
 
 ## Installation
 
