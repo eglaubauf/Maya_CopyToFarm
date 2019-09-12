@@ -155,10 +155,3 @@ class Controller(QtWidgets.QMainWindow, view.Ui_copyFarm):
             self.core.setNewWorkspace()
             self.core.reOpenFile()
         self.destroy()
-
-
-
-
-
-
-

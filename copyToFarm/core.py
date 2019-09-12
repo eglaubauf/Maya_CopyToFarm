@@ -96,6 +96,7 @@ class Core():
             sourceFile = f[occur+1:]
             sourcePath = f[:occur+1]
             sourcePathSub = ''
+            
 
             #Trim away Project Directory
             if sourcePath.startswith(self.ws) is True:
@@ -103,7 +104,8 @@ class Core():
             else:
                 occur = sourcePath.find('/')
                 sourcePathSub = sourcePath[occur:]
-
+            print(sourcePathSub)
+            
             # create Directories if Missing
             destinationPath = self.dest + '/' + sourcePathSub
             if not os.path.exists(destinationPath):
@@ -121,13 +123,13 @@ class Core():
                     if os.path.getctime(f) > os.path.getctime(destination) is True:
                         try:
                             fc.copyfile(f, destination)
-                        except fc.CTError:
+                        except:
                             return 0
                         count += 1
             else: 
                 try:
                     fc.copyfile(f, destination)
-                except fc.CTError:
+                except:
                     return 0
                 count +=1
 
