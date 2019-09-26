@@ -22,8 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
-import pymel.core as pm
 import maya.cmds as cmds
 
 from PySide2 import QtWidgets, QtCore, QtGui
