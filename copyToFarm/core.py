@@ -24,8 +24,8 @@
 
 import os
 import maya.cmds as cmds
-import pymel.core as pm
 import fastCopy as fc
+import re
 
 class Core():
 
@@ -36,12 +36,11 @@ class Core():
         self.dest = ''
         self.OpenNew = False
         self.ImportFlag = False
+        self.count = 0
 
     # Query the Current Workspace
     def getWorkspace(self):  
         return cmds.workspace(q=True, directory=True, rd = True)
-
- 
     
     # Gets a List of all Files in a Maya Scene
     def getAllLinkedFiles(self):
@@ -69,7 +68,6 @@ class Core():
     def setImport(self, flag):
         self.importFlag = flag
 
-
     #Import all Levels of References 
     def importReference(self):
         changed = True
@@ -83,57 +81,115 @@ class Core():
                     changed = True
                     count +=1
         self.saveFileAppend('_imported')
-       
         return count    
 
     #Copies all Files to a new Workspace
     def copyFiles(self):
-        count = 0
+        self.count = 0
+
+        #Get all Tex/Filenodes in Scene
+        nodes = cmds.ls()
+        #For each Node get all Attrs and check if string matches
+        for n in nodes:
+            for attr in cmds.listAttr(n, r=1):
+                parm =  n+'.'+attr
+                if cmds.objExists(parm):
+                    try:
+                        #Get Attr cant handle certain datatypes
+                        aType = cmds.getAttr(parm, typ=1)
+                    except:
+                        #but lets ignore the exeception and continue onwards
+                        continue
+                    if  aType == 'string':
+                            val = cmds.getAttr(parm)
+                            if val is not None:
+                                for f in self.files:
+
+                                    destination = self.calcDestination(f)
+                                    occur = f.rfind("/")
+                                    sourceFile = f[occur+1:]
+                                    #Check for Match
+                                    if val.endswith(sourceFile):
+                                        #CopyFile
+                                        self.copy(f, destination)
+                                        #ChangeAttribute
+                                        cmds.setAttr(parm, destination,type="string")
+                                        self.files.remove(f)
+                                        self.count+=1
+                                   
+        #Copy References (only non .ma /.mb)
+        self.copyReference()
+
+        #copySceneFile (Save File into new location)
+        f = self.files[0]
+        destination = self.calcDestination(f)
+        cmds.file( rename=destination )
+        cmds.file( save=True, type='mayaAscii' )
+
+        self.count+=1
+        return self.count
+
+
+    def copyReference(self):
+
         for f in self.files:
+            if not f.endswith('.ma') and not f.endswith('.mb'):
+                
+                destination = self.calcDestination(f)
+                #Remove double Slashes
+                destination = re.sub('//+', '/', destination)
+                #Get Reference Node
+                rn = cmds.referenceQuery(f ,rfn=True)
+                #Copy File
+                self.copy(f,destination)
+                #Relink Reference
+                cmds.file(destination, loadReference=rn)
+                
 
-            occur = f.rfind("/")
-            #Full Paths from SourceFile
-            sourceFile = f[occur+1:]
-            sourcePath = f[:occur+1]
-            sourcePathSub = ''
-            
+    def copy(self, f, destination):
 
-            #Trim away Project Directory
-            if sourcePath.startswith(self.ws) is True:
-                sourcePathSub = sourcePath[len(self.ws):]
-            else:
-                occur = sourcePath.find('/')
-                sourcePathSub = sourcePath[occur:]
-            print(sourcePathSub)
-            
-            # create Directories if Missing
-            destinationPath = self.dest + '/' + sourcePathSub
-            if not os.path.exists(destinationPath):
-                try:
-                    os.makedirs(destinationPath)
-                except WindowsError:
-                    return 0
-                    
-            #Create CopyPath
-            destination = self.dest + '/' + sourcePathSub + sourceFile
+        #Copy only Newer Files?
+        if self.copyAll is False:
+            if os.path.exists(destination):
+                if os.path.getctime(f) > os.path.getctime(destination) is True:
+                    try:
+                        fc.copyfile(f, destination)
+                    except:
+                        return 0
+                    self.count += 1
+        else: 
+            try:
+                fc.copyfile(f, destination)
+                self.count += 1
+            except:
+                return 0
 
-            #Copy only Newer Files?
-            if self.copyAll is False:
-                if os.path.exists(destination):
-                    if os.path.getctime(f) > os.path.getctime(destination) is True:
-                        try:
-                            fc.copyfile(f, destination)
-                        except:
-                            return 0
-                        count += 1
-            else: 
-                try:
-                    fc.copyfile(f, destination)
-                except:
-                    return 0
-                count +=1
-
-        return count
+    
+    def calcDestination(self, f):
+        
+        occur = f.rfind("/")
+        #Full Paths from SourceFile
+        sourceFile = f[occur+1:]
+        sourcePath = f[:occur+1]
+        sourcePathSub = ''
+        
+        #Trim away Project Directory
+        if sourcePath.startswith(self.ws) is True:
+            sourcePathSub = sourcePath[len(self.ws):]
+        else:
+            occur = sourcePath.find('/')
+            sourcePathSub = sourcePath[occur:]
+        
+        # create Directories if Missing
+        destinationPath = self.dest + '/' + sourcePathSub
+        if not os.path.exists(destinationPath):
+            try:
+                os.makedirs(destinationPath)
+            except WindowsError:
+                return 0
+                
+        #Return Destination
+        return self.dest + '/' + sourcePathSub + sourceFile      
 
     #Reopens The File in the New Workspace
     def reOpenFile(self):
