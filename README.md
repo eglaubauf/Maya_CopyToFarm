@@ -1,14 +1,20 @@
 # Maya_CopyToFarm
 
-This script provides a window in which the user is able to select a directory to copy the current file and it´s dependencies to a different, arbitrary location (e.g. a network storage). In this process the script will copy all linked/referenced files to the chosen location as long as they are below the current workspace. 
+### Development stopped
 
-The addon also provides the user with a list of files which will be copied. The script is optmized for fast copying and copies only the files which are referenced or linked to within Maya.  Further the user is able to import all reference (also multi-level references) with one click. In this case the script saves the current file as a copy with a "_imported" suffix. 
+This plugin will not be developed any further. Feel free to use the code for your purpose.
 
-The user can also choose if only newer files or all files should be copied. In both cases existing files will be overwritten. 
+### Features
 
-The user is also able to open the File in its destination folder in one step, by setting the according checkmark. 
+This script provides a window in which the user is able to select a directory to copy the current file and it´s dependencies to a different, arbitrary location (e.g. a network storage). In this process the script will copy all linked/referenced files to the chosen location as long as they are below the current workspace.
 
-This script has only been tested with Maya 2019 and Windows 10. 
+The addon also provides the user with a list of files which will be copied. The script is optmized for fast copying and copies only the files which are referenced or linked to within Maya.  Further the user is able to import all reference (also multi-level references) with one click. In this case the script saves the current file as a copy with a "_imported" suffix.
+
+The user can also choose if only newer files or all files should be copied. In both cases existing files will be overwritten.
+
+The user is also able to open the File in its destination folder in one step, by setting the according checkmark.
+
+This script has only been tested with Maya 2019 and Windows 10.
 
 
 ![alt text](https://github.com/eglaubauf/Maya_CopyToFarm/blob/master/images/Screenshot.png "The Provided UI by the Script")
